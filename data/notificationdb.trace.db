@@ -1,0 +1,36 @@
+2026-02-09 10:31:43.025658+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table [*]user (id varchar(255) not null, email varchar(255), password varchar(255), role enum ('ADMIN','USER'), username varchar(255), primary key (id))"; expected "identifier"; SQL statement:
+create table user (id varchar(255) not null, email varchar(255), password varchar(255), role enum ('ADMIN','USER'), username varchar(255), primary key (id)) [42001-240]
+2026-02-09 12:02:23.019651+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table [*]user (id varchar(255) not null, email varchar(255), password varchar(255), role enum ('ADMIN','USER'), username varchar(255), primary key (id))"; expected "identifier"; SQL statement:
+create table user (id varchar(255) not null, email varchar(255), password varchar(255), role enum ('ADMIN','USER'), username varchar(255), primary key (id)) [42001-240]
+2026-02-09 14:43:09.362856+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table [*]user (id varchar(255) not null, email varchar(255), password varchar(255), role enum ('ADMIN','USER'), username varchar(255), primary key (id))"; expected "identifier"; SQL statement:
+create table user (id varchar(255) not null, email varchar(255), password varchar(255), role enum ('ADMIN','USER'), username varchar(255), primary key (id)) [42001-240]
+2026-02-10 09:34:24.947441+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table [*]user (id varchar(255) not null, email varchar(255), password varchar(255), role enum ('ADMIN','USER'), username varchar(255), primary key (id))"; expected "identifier"; SQL statement:
+create table user (id varchar(255) not null, email varchar(255), password varchar(255), role enum ('ADMIN','USER'), username varchar(255), primary key (id)) [42001-240]
+2026-02-10 10:45:07.107245+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table [*]user (id varchar(255) not null, email varchar(255), password varchar(255), role enum ('ADMIN','USER'), username varchar(255), primary key (id))"; expected "identifier"; SQL statement:
+create table user (id varchar(255) not null, email varchar(255), password varchar(255), role enum ('ADMIN','USER'), username varchar(255), primary key (id)) [42001-240]
+2026-02-10 12:16:40.317219+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table [*]user (id varchar(255) not null, email varchar(255), password varchar(255), role enum ('ADMIN','USER'), username varchar(255), primary key (id))"; expected "identifier"; SQL statement:
+create table user (id varchar(255) not null, email varchar(255), password varchar(255), role enum ('ADMIN','USER'), username varchar(255), primary key (id)) [42001-240]
+2026-02-10 12:24:58.571583+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table [*]user (id varchar(255) not null, email varchar(255), password varchar(255), role enum ('ADMIN','USER'), username varchar(255), primary key (id))"; expected "identifier"; SQL statement:
+create table user (id varchar(255) not null, email varchar(255), password varchar(255), role enum ('ADMIN','USER'), username varchar(255), primary key (id)) [42001-240]
+2026-02-10 12:25:00.860211+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table [*]user (id varchar(255) not null, email varchar(255), password varchar(255), role enum ('ADMIN','USER'), username varchar(255), primary key (id))"; expected "identifier"; SQL statement:
+create table user (id varchar(255) not null, email varchar(255), password varchar(255), role enum ('ADMIN','USER'), username varchar(255), primary key (id)) [42001-240]
+2026-02-10 12:33:06.264225+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table [*]user (id varchar(255) not null, email varchar(255), password varchar(255), role enum ('ADMIN','USER'), username varchar(255), primary key (id))"; expected "identifier"; SQL statement:
+create table user (id varchar(255) not null, email varchar(255), password varchar(255), role enum ('ADMIN','USER'), username varchar(255), primary key (id)) [42001-240]
+2026-02-10 12:33:08.479758+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table [*]user (id varchar(255) not null, email varchar(255), password varchar(255), role enum ('ADMIN','USER'), username varchar(255), primary key (id))"; expected "identifier"; SQL statement:
+create table user (id varchar(255) not null, email varchar(255), password varchar(255), role enum ('ADMIN','USER'), username varchar(255), primary key (id)) [42001-240]
+2026-02-10 12:47:41.615866+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table [*]user (id varchar(255) not null, email varchar(255), password varchar(255), role enum ('ADMIN','USER'), username varchar(255), primary key (id))"; expected "identifier"; SQL statement:
+create table user (id varchar(255) not null, email varchar(255), password varchar(255), role enum ('ADMIN','USER'), username varchar(255), primary key (id)) [42001-240]
+2026-02-10 12:47:59.944411+02:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table [*]user (id varchar(255) not null, email varchar(255), password varchar(255), role enum ('ADMIN','USER'), username varchar(255), primary key (id))"; expected "identifier"; SQL statement:
+create table user (id varchar(255) not null, email varchar(255), password varchar(255), role enum ('ADMIN','USER'), username varchar(255), primary key (id)) [42001-240]
