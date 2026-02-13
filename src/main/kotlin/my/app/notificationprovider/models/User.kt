@@ -1,5 +1,6 @@
 package my.app.notificationprovider.models
 
+import com.fasterxml.jackson.annotation.JsonManagedReference
 import jakarta.persistence.*
 import java.util.*
 
@@ -13,6 +14,7 @@ data class User(
     @Enumerated(EnumType.STRING)
     val role: UserRole = UserRole.USER,
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @JsonManagedReference
     val notifications: MutableList<Notification> = mutableListOf()
 )
 
