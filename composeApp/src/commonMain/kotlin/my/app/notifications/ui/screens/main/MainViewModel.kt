@@ -35,6 +35,8 @@ class MainViewModel {
         private set
 
     init {
+        println("🚀 MainViewModel initialized")
+
         // Start WebSocket connection with current user's ID
         connectWebSocket()
 
@@ -43,64 +45,91 @@ class MainViewModel {
     }
 
     private fun connectWebSocket() {
+        println("🔌 Setting up WebSocket connection...")
+
         scope.launch {
-            // Connect to WebSocket with user ID
             try {
+                println("👤 Current user ID: ${currentUser.id}")
+
+                // Start all collectors BEFORE connecting
+                // Observe connection state
+                launch {
+                    println("👂 Started listening to connection state")
+                    webSocketClient.connectionState.collect { state ->
+                        println("📡 Connection state changed: $state")
+                        isWebSocketConnected = state == NotificationWebSocketClient.ConnectionState.CONNECTED
+
+                        if (state == NotificationWebSocketClient.ConnectionState.CONNECTED) {
+                            println("✅ WebSocket connected for user: ${currentUser.id}")
+                        }
+                    }
+                }
+
+                // Observe new/updated notifications
+                launch {
+                    println("👂 Started listening to notifications")
+                    webSocketClient.notifications.collect { notification ->
+                        println("🔔 Received notification in flow: $notification")
+                        if (notification != null) {
+                            handleNewNotification(notification)
+                        }
+                    }
+                }
+
+                // Observe deleted notifications
+                launch {
+                    println("👂 Started listening to deleted notifications")
+                    webSocketClient.deletedNotificationId.collect { id ->
+                        println("🗑️ Received deleted notification ID: $id")
+                        if (id != null) {
+                            handleDeletedNotification(id)
+                        }
+                    }
+                }
+
+                // Give collectors a moment to set up
+                kotlinx.coroutines.delay(100)
+
+                // NOW connect to WebSocket
+                println("🔌 Connecting to WebSocket...")
                 webSocketClient.connect(scope, currentUser.id!!)
+
             } catch (e: Exception) {
-                println("Exception: " + e.message)
-                return@launch
-            }
-
-            // Observe connection state
-            launch {
-                webSocketClient.connectionState.collect { state ->
-                    isWebSocketConnected = state == NotificationWebSocketClient.ConnectionState.CONNECTED
-
-                    if (state == NotificationWebSocketClient.ConnectionState.CONNECTED) {
-                        println("WebSocket connected for user: ${currentUser.id}")
-                    }
-                }
-            }
-
-            // Observe new/updated notifications
-            launch {
-                webSocketClient.notifications.collect { notification ->
-                    if (notification != null) {
-                        handleNewNotification(notification)
-                    }
-                }
-            }
-
-            // Observe deleted notifications
-            launch {
-                webSocketClient.deletedNotificationId.collect { id ->
-                    if (id != null) {
-                        handleDeletedNotification(id)
-                    }
-                }
+                println("❌ Exception in connectWebSocket: ${e.message}")
+                e.printStackTrace()
             }
         }
     }
 
     private fun handleNewNotification(notification: Notification) {
-        println("Received new notification via WebSocket: ${notification.title}")
+        println("🔔 handleNewNotification called: ${notification.title}")
 
         // Update or add notification to list
         val existingIndex = notifications.value.indexOfFirst { it.id == notification.id }
+
         notifications.value = when {
-            existingIndex >= 0 -> notifications.value.toMutableList().apply {
-                set(existingIndex, notification)
+            existingIndex >= 0 -> {
+                println("📝 Updating existing notification at index $existingIndex")
+                notifications.value.toMutableList().apply {
+                    set(existingIndex, notification)
+                }
             }
-            else -> listOf(notification) + notifications.value
+            else -> {
+                println("➕ Adding new notification to list")
+                listOf(notification) + notifications.value
+            }
         }
+
+        println("📊 Total notifications: ${notifications.value.size}")
 
         // Update displayed list
         applyFiltersAndSort()
+
+        println("✅ Notification handled successfully")
     }
 
     private fun handleDeletedNotification(id: String) {
-        println("Notification deleted via WebSocket: $id")
+        println("🗑️ handleDeletedNotification called: $id")
 
         notifications.value = notifications.value.filter { it.id != id }
         applyFiltersAndSort()
@@ -109,6 +138,7 @@ class MainViewModel {
     private var currentSortOption: String? = null
 
     private fun applyFiltersAndSort() {
+        println("🔄 Applying filters and sort...")
         var result = notifications.value
 
         if (currentSearchQuery.isNotBlank()) {
@@ -123,10 +153,11 @@ class MainViewModel {
             "Priority" -> result.sortedByDescending { it.priority }
             "Date" -> result.sortedByDescending { it.time }
             "Status" -> result.sortedBy { it.deliveryStatus }
-            else -> result
+            else -> result.sortedByDescending { it.time }
         }
 
         displayedNotifications.value = result
+        println("📊 Displayed notifications: ${displayedNotifications.value.size}")
     }
 
     fun loadNotifications() {
@@ -137,12 +168,15 @@ class MainViewModel {
             try {
                 notifications.value = apiClient.getNotificationsByUser(currentUser) ?: throw Exception()
                 displayedNotifications.value = notifications.value
+                println("📥 Loaded ${notifications.value.size} notifications")
             } catch (e: Exception) {
                 errorMessage = "Failed to load notifications: ${e.message}"
+                println("❌ Failed to load notifications: ${e.message}")
             } finally {
                 isLoading = false
             }
         }
+        applyFiltersAndSort()
     }
 
     fun createNotification(title: String, message: String, priority: NotificationPriority) {

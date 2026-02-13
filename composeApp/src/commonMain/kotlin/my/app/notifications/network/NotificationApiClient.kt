@@ -4,6 +4,8 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
@@ -42,11 +44,25 @@ class NotificationApiClient {
         }
     }
 
-    suspend fun getNotificationsByUser(user: User) : List<Notification>? {
+    suspend fun getNotificationsByUser(user: User): List<Notification>? {
         return try {
-            client.get("$baseUrl/users/${user.id}").body<List<Notification>>()
+            println("📥 Fetching notifications for user: ${user.id}")
+
+            val response: HttpResponse = client.get("$baseUrl/user/${user.id}")
+
+            println("📡 Response status: ${response.status}")
+            val responseText = response.bodyAsText()
+            println("📄 Response body: ${responseText.take(200)}...")
+
+            if (response.status == HttpStatusCode.OK) {
+                Json.decodeFromString<List<Notification>>(responseText)
+            } else {
+                println("❌ Error response: $responseText")
+                null
+            }
         } catch (e: Exception) {
-            println("Error fetching notifications: ${e.message}")
+            println("❌ Error fetching notifications: ${e.message}")
+            e.printStackTrace()
             null
         }
     }
