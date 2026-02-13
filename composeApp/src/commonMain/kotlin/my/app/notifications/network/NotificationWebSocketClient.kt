@@ -25,7 +25,6 @@ class NotificationWebSocketClient {
     private val _connectionState = MutableStateFlow(ConnectionState.DISCONNECTED)
     val connectionState = _connectionState.asStateFlow()
 
-    // Assuming you might add a "deleted" payload later, keeping this for your VM
     private val _deletedNotificationId = MutableSharedFlow<String?>()
     val deletedNotificationId = _deletedNotificationId.asSharedFlow()
 
@@ -33,28 +32,31 @@ class NotificationWebSocketClient {
 
     enum class ConnectionState { CONNECTED, DISCONNECTED, CONNECTING }
 
-    suspend fun connect(scope: CoroutineScope) {
+    // Modified to accept userId parameter
+    suspend fun connect(scope: CoroutineScope, userId: String) {
         if (_connectionState.value == ConnectionState.CONNECTED) return
 
         _connectionState.value = ConnectionState.CONNECTING
 
         scope.launch {
             try {
-                // Use the RAW endpoint we configured in Spring
+                // Connect to user-specific WebSocket endpoint
                 client.webSocket(
                     method = HttpMethod.Get,
                     host = "127.0.0.1",
                     port = 8080,
-                    path = "/ws/raw-notifications"
+                    path = "/ws/notifications/$userId"  // User-specific path
                 ) {
                     session = this
                     _connectionState.value = ConnectionState.CONNECTED
+                    println("WebSocket connected for user: $userId")
 
                     for (frame in incoming) {
                         if (frame is io.ktor.websocket.Frame.Text) {
                             val text = frame.readText()
                             try {
                                 val notification = Json.decodeFromString<Notification>(text)
+                                println("Received notification via WebSocket: ${notification.title}")
                                 _notifications.emit(notification)
                             } catch (e: Exception) {
                                 println("Error parsing WS message: ${e.message}")
@@ -64,16 +66,17 @@ class NotificationWebSocketClient {
                 }
             } catch (e: Exception) {
                 println("WebSocket Error: ${e.message}")
+                e.printStackTrace()
             } finally {
                 _connectionState.value = ConnectionState.DISCONNECTED
                 session = null
+                println("WebSocket disconnected")
             }
         }
     }
 
     suspend fun disconnect() {
-        // session?.close() is a suspend function, we launch it in a Global or provided scope
-        run { session?.close() }
+        session?.close()
         _connectionState.value = ConnectionState.DISCONNECTED
     }
 }

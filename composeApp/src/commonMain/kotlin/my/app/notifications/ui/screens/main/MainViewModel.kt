@@ -35,7 +35,7 @@ class MainViewModel {
         private set
 
     init {
-        // Start WebSocket connection
+        // Start WebSocket connection with current user's ID
         connectWebSocket()
 
         // Load initial notifications
@@ -44,13 +44,22 @@ class MainViewModel {
 
     private fun connectWebSocket() {
         scope.launch {
-            // Connect to WebSocket
-            webSocketClient.connect(scope)
+            // Connect to WebSocket with user ID
+            try {
+                webSocketClient.connect(scope, currentUser.id!!)
+            } catch (e: Exception) {
+                println("Exception: " + e.message)
+                return@launch
+            }
 
             // Observe connection state
             launch {
                 webSocketClient.connectionState.collect { state ->
                     isWebSocketConnected = state == NotificationWebSocketClient.ConnectionState.CONNECTED
+
+                    if (state == NotificationWebSocketClient.ConnectionState.CONNECTED) {
+                        println("WebSocket connected for user: ${currentUser.id}")
+                    }
                 }
             }
 
@@ -79,11 +88,11 @@ class MainViewModel {
 
         // Update or add notification to list
         val existingIndex = notifications.value.indexOfFirst { it.id == notification.id }
-        notifications.value = when (existingIndex) {
-            0 -> notifications.value.toMutableList().apply {
+        notifications.value = when {
+            existingIndex >= 0 -> notifications.value.toMutableList().apply {
                 set(existingIndex, notification)
             }
-            else -> listOf(notification) + notifications.value.toMutableList()
+            else -> listOf(notification) + notifications.value
         }
 
         // Update displayed list

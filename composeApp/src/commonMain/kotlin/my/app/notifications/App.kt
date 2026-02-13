@@ -30,6 +30,7 @@ import androidx.navigation.toRoute
 import kotlinx.coroutines.launch
 import my.app.notifications.models.Notification
 import my.app.notifications.models.NotificationPriority
+import my.app.notifications.models.emptyUser
 import my.app.notifications.statics.currentUser
 import my.app.notifications.ui.navigation.AppRoute
 import my.app.notifications.ui.screens.details.DetailsScreen
@@ -57,6 +58,9 @@ fun App() {
             startDestination = AppRoute.LoginRoute
         ) {
             composable<AppRoute.MainRoute> {
+                do {
+
+                } while (currentUser == emptyUser)
                 MainScreen(
                     onNotificationClick = { notification ->
                         navController.navigate(AppRoute.DetailsRoute(notification.id))

@@ -18,6 +18,7 @@ import my.app.notifications.models.Notification
 import my.app.notifications.models.getPlaceholderNotification
 import my.app.notifications.network.NotificationApiClient
 import my.app.notifications.network.NotificationWebSocketClient
+import my.app.notifications.statics.currentUser
 
 class DetailsViewModel : ViewModel() {
 
@@ -53,7 +54,11 @@ class DetailsViewModel : ViewModel() {
     private fun connectWebSocket() {
         scope.launch {
             // Connect to WebSocket
-            webSocketClient.connect(scope)
+            try {
+                webSocketClient.connect(scope, currentUser.id!!)
+            } catch (e: Exception) {
+                return@launch
+            }
 
             // Observe connection state
             launch {
