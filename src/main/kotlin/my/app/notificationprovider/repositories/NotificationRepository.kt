@@ -15,6 +15,6 @@ interface NotificationRepository : JpaRepository<Notification, String> {
 
     fun findByTitleContaining(title: String): List<Notification>
 
-    fun findNotificationsByUser(user: User): MutableList<Notification>
+    fun findNotificationsByUserId(userId: String): MutableList<Notification>
 
 }

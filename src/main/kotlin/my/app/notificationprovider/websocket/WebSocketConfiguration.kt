@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.web.socket.config.annotation.EnableWebSocket
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
+
 @Component
 class MyNotificationHandler(private val objectMapper: ObjectMapper) : TextWebSocketHandler() {
 
@@ -21,9 +22,10 @@ class MyNotificationHandler(private val objectMapper: ObjectMapper) : TextWebSoc
         val userId = extractUserId(session)
         if (userId != null) {
             userSessions.computeIfAbsent(userId) { ConcurrentHashMap.newKeySet() }.add(session)
-            println("WebSocket connected for user: $userId (Total sessions: ${userSessions[userId]?.size})")
+            println("✅ WebSocket connected for user: $userId (Total sessions: ${userSessions[userId]?.size})")
+            println("📊 Active user sessions: ${userSessions.keys}")
         } else {
-            println("WebSocket connected without userId - closing connection")
+            println("❌ WebSocket connected without userId - closing connection")
             session.close()
         }
     }
@@ -35,46 +37,45 @@ class MyNotificationHandler(private val objectMapper: ObjectMapper) : TextWebSoc
             if (userSessions[userId]?.isEmpty() == true) {
                 userSessions.remove(userId)
             }
-            println("WebSocket disconnected for user: $userId")
+            println("🔌 WebSocket disconnected for user: $userId")
         }
     }
 
     // Send notification to a specific user
     fun sendNotificationToUser(userId: String, notification: Any) {
+        println("📤 sendNotificationToUser called for userId: $userId")
+        println("📊 Current user sessions: ${userSessions.keys}")
+
         val sessions = userSessions[userId]
         if (sessions.isNullOrEmpty()) {
-            println("No active sessions for user: $userId")
+            println("⚠️ No active sessions for user: $userId")
             return
         }
 
-        val json = objectMapper.writeValueAsString(notification)
-        val message = TextMessage(json)
+        println("📱 Found ${sessions.size} active session(s) for user: $userId")
 
-        sessions.forEach { session ->
-            if (session.isOpen) {
-                try {
-                    session.sendMessage(message)
-                    println("Sent notification to user $userId: $json")
-                } catch (e: Exception) {
-                    println("Error sending message to user $userId: ${e.message}")
+        try {
+            val json = objectMapper.writeValueAsString(notification)
+            println("📝 Serialized notification to JSON: $json")
+
+            val message = TextMessage(json)
+
+            sessions.forEach { session ->
+                if (session.isOpen) {
+                    try {
+                        session.sendMessage(message)
+                        println("✅ Sent notification to user $userId via WebSocket")
+                    } catch (e: Exception) {
+                        println("❌ Error sending message to user $userId: ${e.message}")
+                        e.printStackTrace()
+                    }
+                } else {
+                    println("⚠️ Session is closed for user $userId")
                 }
             }
-        }
-    }
-
-    // Broadcast to ALL connected users (keep for backward compatibility if needed)
-    fun broadcastNotification(notification: Any) {
-        val json = objectMapper.writeValueAsString(notification)
-        val message = TextMessage(json)
-
-        userSessions.values.flatten().forEach { session ->
-            if (session.isOpen) {
-                try {
-                    session.sendMessage(message)
-                } catch (e: Exception) {
-                    println("Error broadcasting message: ${e.message}")
-                }
-            }
+        } catch (e: Exception) {
+            println("❌ Error serializing notification: ${e.message}")
+            e.printStackTrace()
         }
     }
 
@@ -82,7 +83,9 @@ class MyNotificationHandler(private val objectMapper: ObjectMapper) : TextWebSoc
         // Extract userId from URI path: /ws/notifications/{userId}
         val uri = session.uri ?: return null
         val pathSegments = uri.path.split("/")
-        return pathSegments.lastOrNull()
+        val userId = pathSegments.lastOrNull()
+        println("🔍 Extracted userId from path: $userId (full path: ${uri.path})")
+        return userId
     }
 }
 

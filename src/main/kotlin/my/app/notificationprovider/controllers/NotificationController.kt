@@ -3,9 +3,7 @@ package my.app.notificationprovider.controllers
 import jakarta.validation.Valid
 import my.app.notificationprovider.dtos.CreateNotificationRequest
 import my.app.notificationprovider.dtos.UpdateStatusRequest
-import my.app.notificationprovider.models.DeliveryStatus
 import my.app.notificationprovider.models.Notification
-import my.app.notificationprovider.models.NotificationPriority
 import my.app.notificationprovider.services.NotificationService
 import my.app.notificationprovider.services.UserService
 import org.springframework.http.HttpStatus
@@ -68,14 +66,10 @@ class NotificationController(
         }
     }
 
-    @GetMapping("/users/{id}")
-    fun getNotificationsByUserId(@PathVariable id: String) : List<Notification> {
-        val user = userService.getUserById(id)
-        return if (user != null) {
-            notificationService.getNotificationsByUser(user)
-        } else {
-            emptyList()
-        }
+    @GetMapping("/user/{userId}")
+    fun getNotificationsByUser(@PathVariable userId: String): ResponseEntity<List<Notification>> {
+        val notifications = notificationService.getAllNotificationsByUserId(userId)
+        return ResponseEntity.ok(notifications)
     }
 }
 

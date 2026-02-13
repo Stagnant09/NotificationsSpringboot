@@ -72,7 +72,7 @@ class NotificationService(
         //messagingTemplate.convertAndSend("/topic/notifications", notification)
     }
 
-    fun getNotificationsByUser(user: User) : List<Notification> {
-        return notificationRepository.findNotificationsByUser(user)
+    fun getAllNotificationsByUserId(userId: String) : List<Notification> {
+        return notificationRepository.findNotificationsByUserId(userId = userId)
     }
 }
