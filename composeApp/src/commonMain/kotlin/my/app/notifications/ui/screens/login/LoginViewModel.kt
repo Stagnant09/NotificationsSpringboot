@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import my.app.notifications.models.User
 import my.app.notifications.network.UserApiClient
 
 class LoginViewModel : ViewModel() {
@@ -20,7 +21,7 @@ class LoginViewModel : ViewModel() {
     var loginSuccessful by mutableStateOf(false)
         private set
 
-    var loggedInUser by mutableStateOf<String?>(null)
+    var loggedInUser by mutableStateOf<User?>(null)
         private set
 
     fun loginUser(username: String, password: String) {
@@ -35,7 +36,7 @@ class LoginViewModel : ViewModel() {
 
             if (result != null) {
                 println("User logged in successfully: ${result.username}")
-                loggedInUser = result.username
+                loggedInUser = result
                 loginSuccessful = true
             } else {
                 println("Login failed")

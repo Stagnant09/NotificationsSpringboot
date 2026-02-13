@@ -30,6 +30,7 @@ import androidx.navigation.toRoute
 import kotlinx.coroutines.launch
 import my.app.notifications.models.Notification
 import my.app.notifications.models.NotificationPriority
+import my.app.notifications.statics.currentUser
 import my.app.notifications.ui.navigation.AppRoute
 import my.app.notifications.ui.screens.details.DetailsScreen
 import my.app.notifications.ui.screens.details.DetailsViewModel
@@ -97,6 +98,7 @@ fun App() {
 
                 LaunchedEffect(viewModel.loginSuccessful) {
                     if (viewModel.loginSuccessful) {
+                        currentUser = viewModel.loggedInUser ?: return@LaunchedEffect
                         navController.navigate(AppRoute.MainRoute) {
                             popUpTo(AppRoute.LoginRoute) { inclusive = true }
                         }

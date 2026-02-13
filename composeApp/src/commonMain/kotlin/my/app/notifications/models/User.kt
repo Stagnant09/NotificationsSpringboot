@@ -12,6 +12,12 @@ data class User(
     val role: UserRole = UserRole.USER
 )
 
+val emptyUser = User(
+    username = "",
+    email = "",
+    password = ""
+)
+
 enum class UserRole {
     USER, ADMIN
 }

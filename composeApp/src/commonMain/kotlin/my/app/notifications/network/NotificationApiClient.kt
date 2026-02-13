@@ -10,6 +10,7 @@ import kotlinx.serialization.json.Json
 import my.app.notifications.models.DeliveryStatus
 import my.app.notifications.models.Notification
 import my.app.notifications.models.NotificationPriority
+import my.app.notifications.models.User
 
 class NotificationApiClient {
     private val client = HttpClient {
@@ -37,6 +38,15 @@ class NotificationApiClient {
             client.get("$baseUrl/$id").body()
         } catch (e: Exception) {
             println("Error fetching notification: ${e.message}")
+            null
+        }
+    }
+
+    suspend fun getNotificationsByUser(user: User) : List<Notification>? {
+        return try {
+            client.get("$baseUrl/users/${user.id}").body<List<Notification>>()
+        } catch (e: Exception) {
+            println("Error fetching notifications: ${e.message}")
             null
         }
     }

@@ -10,6 +10,7 @@ import my.app.notifications.models.Notification
 import my.app.notifications.models.NotificationPriority
 import my.app.notifications.network.NotificationApiClient
 import my.app.notifications.network.NotificationWebSocketClient
+import my.app.notifications.statics.currentUser
 
 class MainViewModel {
     private val apiClient = NotificationApiClient()
@@ -125,7 +126,7 @@ class MainViewModel {
             errorMessage = null
 
             try {
-                notifications.value = apiClient.getAllNotifications()
+                notifications.value = apiClient.getNotificationsByUser(currentUser) ?: throw Exception()
                 displayedNotifications.value = notifications.value
             } catch (e: Exception) {
                 errorMessage = "Failed to load notifications: ${e.message}"
