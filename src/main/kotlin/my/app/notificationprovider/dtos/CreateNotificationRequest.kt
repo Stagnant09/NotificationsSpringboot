@@ -13,5 +13,8 @@ data class CreateNotificationRequest(
     @field:Size(min = 1, max = 1000)
     val message: String,
 
-    val priority: NotificationPriority = NotificationPriority.NORMAL
+    val priority: NotificationPriority = NotificationPriority.NORMAL,
+
+    @field:NotBlank(message = "User ID is required")
+    val userId: String
 )

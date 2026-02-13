@@ -17,18 +17,12 @@ data class Notification(
     val priority: NotificationPriority = NotificationPriority.NORMAL,
 
     @Enumerated(EnumType.STRING)
-    var deliveryStatus: DeliveryStatus = DeliveryStatus.PENDING
-) {
-    // No-arg constructor for JPA
-    constructor() : this(
-        id = UUID.randomUUID().toString(),
-        title = "",
-        message = "",
-        time = System.currentTimeMillis(),
-        priority = NotificationPriority.NORMAL,
-        deliveryStatus = DeliveryStatus.PENDING
-    )
-}
+    var deliveryStatus: DeliveryStatus = DeliveryStatus.PENDING,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    var user: User? = null
+)
 
 enum class NotificationPriority {
     NORMAL,
