@@ -3,6 +3,7 @@ package my.app.notifications.ui.screens.main
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -12,7 +13,7 @@ import my.app.notifications.network.NotificationApiClient
 import my.app.notifications.network.NotificationWebSocketClient
 import my.app.notifications.statics.currentUser
 
-class MainViewModel {
+class MainViewModel : ViewModel() {
     private val apiClient = NotificationApiClient()
     private val webSocketClient = NotificationWebSocketClient()
     private val scope = CoroutineScope(Dispatchers.Main)
@@ -93,7 +94,7 @@ class MainViewModel {
                 // NOW connect to WebSocket
                 println("🔌 Connecting to WebSocket...")
                 webSocketClient.connect(scope, currentUser.id!!)
-
+                applyFiltersAndSort()
             } catch (e: Exception) {
                 println("❌ Exception in connectWebSocket: ${e.message}")
                 e.printStackTrace()
@@ -222,9 +223,5 @@ class MainViewModel {
     suspend fun reconnectWebSocket() {
         webSocketClient.disconnect()
         connectWebSocket()
-    }
-
-    suspend fun onCleared() {
-        webSocketClient.disconnect()
     }
 }
