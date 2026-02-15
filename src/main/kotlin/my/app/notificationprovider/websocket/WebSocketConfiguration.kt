@@ -1,16 +1,16 @@
 package my.app.notificationprovider.websocket
 
+import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Component
 import org.springframework.web.socket.CloseStatus
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
-import org.springframework.web.socket.handler.TextWebSocketHandler
-import tools.jackson.databind.ObjectMapper
-import java.util.concurrent.ConcurrentHashMap
-import org.springframework.context.annotation.Configuration
 import org.springframework.web.socket.config.annotation.EnableWebSocket
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
+import org.springframework.web.socket.handler.TextWebSocketHandler
+import tools.jackson.databind.ObjectMapper
+import java.util.concurrent.ConcurrentHashMap
 
 @Component
 class MyNotificationHandler(private val objectMapper: ObjectMapper) : TextWebSocketHandler() {
@@ -22,10 +22,10 @@ class MyNotificationHandler(private val objectMapper: ObjectMapper) : TextWebSoc
         val userId = extractUserId(session)
         if (userId != null) {
             userSessions.computeIfAbsent(userId) { ConcurrentHashMap.newKeySet() }.add(session)
-            println("✅ WebSocket connected for user: $userId (Total sessions: ${userSessions[userId]?.size})")
-            println("📊 Active user sessions: ${userSessions.keys}")
+            println("WebSocket connected for user: $userId (Total sessions: ${userSessions[userId]?.size})")
+            println("Active user sessions: ${userSessions.keys}")
         } else {
-            println("❌ WebSocket connected without userId - closing connection")
+            println("WebSocket connected without userId - closing connection")
             session.close()
         }
     }
@@ -97,7 +97,7 @@ class WebSocketConfig(private val myNotificationHandler: MyNotificationHandler) 
         registry.addHandler(myNotificationHandler, "/ws/notifications/{userId}")
             .setAllowedOrigins("*")
 
-        // Keep old endpoint for backward compatibility (optional)
+        // Keep old endpoint for backward compatibility
         registry.addHandler(myNotificationHandler, "/ws/raw-notifications")
             .setAllowedOrigins("*")
     }

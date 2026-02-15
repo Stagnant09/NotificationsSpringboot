@@ -3,7 +3,6 @@ package my.app.notificationprovider.services
 import my.app.notificationprovider.models.DeliveryStatus
 import my.app.notificationprovider.models.Notification
 import my.app.notificationprovider.models.NotificationPriority
-import my.app.notificationprovider.models.User
 import my.app.notificationprovider.repositories.NotificationRepository
 import my.app.notificationprovider.repositories.UserRepository
 import my.app.notificationprovider.websocket.MyNotificationHandler
@@ -42,7 +41,12 @@ class NotificationService(
             user = user
         )
 
-        return notificationRepository.save(notification)
+        val savedNotification = notificationRepository.save(notification)
+
+        println("📤 Broadcasting new notification to user: $userId")
+        notificationHandler.sendNotificationToUser(userId, savedNotification)
+
+        return savedNotification
     }
 
     fun updateNotificationStatus(id: String, status: DeliveryStatus): Notification? {
@@ -57,19 +61,25 @@ class NotificationService(
     }
 
     fun deleteNotification(id: String): Boolean {
-        return if (notificationRepository.existsById(id)) {
-            notificationRepository.deleteById(id)
-            // Broadcast deletion
-            //messagingTemplate.convertAndSend("/topic/notifications/deleted", id)
-            true
-        } else {
-            false
-        }
+        val notification = notificationRepository.findById(id).orElse(null) ?: return false
+        val userId = notification.user!!.id
+
+        notificationRepository.deleteById(id)
+
+        val deletionMessage = mapOf(
+            "type" to "DELETE",
+            "id" to id
+        )
+        println("📤 Broadcasting deletion to user: $userId")
+        notificationHandler.sendNotificationToUser(userId, deletionMessage)
+
+        return true
     }
 
     private fun broadcastNotification(notification: Notification) {
-        // Send notification to all subscribers of /topic/notifications
-        //messagingTemplate.convertAndSend("/topic/notifications", notification)
+        // ✅ FIX: Send notification to the specific user via WebSocket
+        println("📤 Broadcasting updated notification to user: ${notification.user!!.id}")
+        notificationHandler.sendNotificationToUser(notification.user!!.id, notification)
     }
 
     fun getAllNotificationsByUserId(userId: String) : List<Notification> {
