@@ -46,7 +46,6 @@ class UserController(
         val user = userService.getUserByUsername(loginRequest.username)
             ?: return ResponseEntity.status(401).build()
 
-        // Check password (you should use passwordEncoder.matches())
         if (user.password == loginRequest.password) {
             return ResponseEntity.ok(user)
         }
