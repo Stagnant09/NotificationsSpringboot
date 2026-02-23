@@ -22,8 +22,6 @@ class MyNotificationHandler(private val objectMapper: ObjectMapper) : TextWebSoc
         val userId = extractUserId(session)
         if (userId != null) {
             userSessions.computeIfAbsent(userId) { ConcurrentHashMap.newKeySet() }.add(session)
-            println("WebSocket connected for user: $userId (Total sessions: ${userSessions[userId]?.size})")
-            println("Active user sessions: ${userSessions.keys}")
         } else {
             println("WebSocket connected without userId - closing connection")
             session.close()
@@ -37,44 +35,35 @@ class MyNotificationHandler(private val objectMapper: ObjectMapper) : TextWebSoc
             if (userSessions[userId]?.isEmpty() == true) {
                 userSessions.remove(userId)
             }
-            println("🔌 WebSocket disconnected for user: $userId")
+            println("WebSocket disconnected for user: $userId")
         }
     }
 
     // Send notification to a specific user
     fun sendNotificationToUser(userId: String, notification: Any) {
-        println("📤 sendNotificationToUser called for userId: $userId")
-        println("📊 Current user sessions: ${userSessions.keys}")
-
         val sessions = userSessions[userId]
         if (sessions.isNullOrEmpty()) {
             println("⚠️ No active sessions for user: $userId")
             return
         }
 
-        println("📱 Found ${sessions.size} active session(s) for user: $userId")
-
         try {
             val json = objectMapper.writeValueAsString(notification)
-            println("📝 Serialized notification to JSON: $json")
-
             val message = TextMessage(json)
 
             sessions.forEach { session ->
                 if (session.isOpen) {
                     try {
                         session.sendMessage(message)
-                        println("✅ Sent notification to user $userId via WebSocket")
                     } catch (e: Exception) {
-                        println("❌ Error sending message to user $userId: ${e.message}")
                         e.printStackTrace()
                     }
                 } else {
-                    println("⚠️ Session is closed for user $userId")
+                    println("Session is closed for user $userId")
                 }
             }
         } catch (e: Exception) {
-            println("❌ Error serializing notification: ${e.message}")
+            println("Error serializing notification: ${e.message}")
             e.printStackTrace()
         }
     }
@@ -84,7 +73,6 @@ class MyNotificationHandler(private val objectMapper: ObjectMapper) : TextWebSoc
         val uri = session.uri ?: return null
         val pathSegments = uri.path.split("/")
         val userId = pathSegments.lastOrNull()
-        println("🔍 Extracted userId from path: $userId (full path: ${uri.path})")
         return userId
     }
 }

@@ -43,7 +43,6 @@ class NotificationService(
 
         val savedNotification = notificationRepository.save(notification)
 
-        println("📤 Broadcasting new notification to user: $userId")
         notificationHandler.sendNotificationToUser(userId, savedNotification)
 
         return savedNotification
@@ -70,19 +69,17 @@ class NotificationService(
             "type" to "DELETE",
             "id" to id
         )
-        println("📤 Broadcasting deletion to user: $userId")
         notificationHandler.sendNotificationToUser(userId, deletionMessage)
 
         return true
     }
 
     private fun broadcastNotification(notification: Notification) {
-        // ✅ FIX: Send notification to the specific user via WebSocket
-        println("📤 Broadcasting updated notification to user: ${notification.user!!.id}")
+        // Send notification to the specific user via WebSocket
         notificationHandler.sendNotificationToUser(notification.user!!.id, notification)
     }
 
-    fun getAllNotificationsByUserId(userId: String) : List<Notification> {
+    fun getAllNotificationsByUserId(userId: String): List<Notification> {
         return notificationRepository.findNotificationsByUserId(userId = userId)
     }
 }
