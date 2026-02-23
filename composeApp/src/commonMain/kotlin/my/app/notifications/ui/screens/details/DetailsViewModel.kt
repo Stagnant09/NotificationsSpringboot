@@ -2,7 +2,6 @@ package my.app.notifications.ui.screens.details
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,7 +14,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import my.app.notifications.models.DeliveryStatus
 import my.app.notifications.models.Notification
-import my.app.notifications.models.getPlaceholderNotification
 import my.app.notifications.network.NotificationApiClient
 import my.app.notifications.network.NotificationWebSocketClient
 import my.app.notifications.statics.currentUser
@@ -46,7 +44,6 @@ class DetailsViewModel : ViewModel() {
         private set
 
     init {
-        println("Viewmodel init")
         connectWebSocket()
         loadNotifications()
     }
@@ -80,7 +77,6 @@ class DetailsViewModel : ViewModel() {
     }
 
     private fun handleNewNotification(notification: Notification) {
-        println("Received new notification via WebSocket: ${notification.title}")
         val existingIndex = notifications.value.indexOfFirst { it.id == notification.id }
         notifications.value = when (existingIndex) {
             0 -> notifications.value.toMutableList().apply {

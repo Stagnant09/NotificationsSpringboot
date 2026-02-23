@@ -1,7 +1,6 @@
 package my.app.notifications.ui.navigation
 
 import kotlinx.serialization.Serializable
-import my.app.notifications.models.Notification
 
 @Serializable
 sealed interface AppRoute {
